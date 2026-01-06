@@ -1,0 +1,72 @@
+services:
+  # -------------------------
+  # Postgres database
+  # -------------------------
+  taskservice.db:
+    image: postgres:15
+    container_name: taskservice.db
+    environment:
+      POSTGRES_DB: taskdb
+      POSTGRES_USER: hemant
+      POSTGRES_PASSWORD: password
+    volumes:
+      - task_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hemant -d taskdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices_net
+
+  # -------------------------
+  # Migration container
+  # -------------------------
+  taskservice.migration:
+    build: .
+    image: taskservice:latest # Build once, tag the image
+    container_name: taskservice.migration
+    depends_on:
+      taskservice.db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      DB_HOST: taskservice.db
+      DB_PORT: 5432
+      DB_USER: hemant
+      DB_PASSWORD: password
+    command: ["dotnet", "TaskService.dll", "--migrate"]
+    restart: "no"
+    networks:
+      - microservices_net
+
+  # -------------------------
+  # API container
+  # -------------------------
+  taskservice.api:
+    build: .
+    image: taskservice:latest # Uses the same built image
+    container_name: taskservice.api
+    ports:
+      - "5006:5006"
+    depends_on:
+      taskservice.db:
+        condition: service_healthy
+      taskservice.migration:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      DB_HOST: taskservice.db
+      DB_PORT: 5432
+      DB_USER: hemant
+      DB_PASSWORD: password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: grahak
+      RABBITMQ_PASS: Jaishreeram@123
+    networks:
+      - microservices_net
+volumes:
+  task_pgdata: # Named volume for Postgres data persistence
+networks:
+  microservices_net:
+    external: true

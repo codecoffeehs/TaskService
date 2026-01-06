@@ -1,0 +1,86 @@
+# .gitignore for a .NET project
+
+# Build Folders
+bin/
+obj/
+out/
+publish/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+*.rider/
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+.nuget/
+
+# ASP.NET/Publish
+app_offline.htm
+wwwroot/aspnetcore-browser-refresh.json
+
+# Configuration / secrets
+appsettings.*.Development.json
+appsettings.Local.json
+local.settings.json
+secrets.json
+
+# Logs, databases, temp files
+*.log
+*.tlog
+*.sql
+*.sqlite
+*.db
+*.mdf
+*.ldf
+*.pid
+*.seeddata
+
+# Test results / coverage
+TestResults/
+*.trx
+*.coverage
+coverage/
+coverage*.json
+*.lcov
+*.coveragexml
+
+# Rider / ReSharper / dotCover
+_ReSharper*/
+*.DotSettings.user
+*.dotCover
+
+# Mono
+mono_crash.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Tooling and generated files
+*.psess
+*.vsp
+*.userprefs
+.vsconfig
+
+# Ignore publish output folders created by dotnet publish
+**/bin/
+**/obj/
+
+# Packages from tools
+.vs/
+packages/
