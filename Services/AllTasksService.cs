@@ -19,7 +19,8 @@ public class AllTasksService(AppDbContext db)
         {
             UserId = userId,
             Title = dto.Title,
-            Due = dto.Due
+            Due = dto.Due,
+            Repeat = dto.Repeat
         };
         await db.Tasks.AddAsync(newTask);
         await db.SaveChangesAsync();
