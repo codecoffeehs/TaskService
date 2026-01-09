@@ -9,9 +9,24 @@ public class AllTasksService(AppDbContext db)
 {
     public async Task<List<TaskItem>> GetAllTasksAsync(Guid userId)
     {
-        var tasks = await db.Tasks.Where(t => t.UserId == userId).Select(t=>new TaskItem(t.Id,t.Title,t.IsCompleted,t.Due,t.Repeat)).ToListAsync();
+        var tasks = await db.Tasks
+            .Where(t => t.UserId == userId)
+            .OrderBy(t => t.IsCompleted)   // incomplete first
+            .ThenBy(t => t.Due)            // earliest due date first
+            .ThenBy(t => t.Repeat)         // non-repeating before repeating
+            .ThenBy(t => t.Title)          // stable ordering
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat
+            ))
+            .ToListAsync();
+
         return tasks;
     }
+
 
     public async Task<TaskItem> CreateTaskAsync(Guid userId,CreateTaskDto dto)
     {
