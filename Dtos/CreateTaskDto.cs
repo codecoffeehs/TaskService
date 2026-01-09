@@ -1,6 +1,7 @@
 namespace TaskService.Dtos;
-
+using TaskService.Models;
 public record CreateTaskDto(
     string Title,
-    DateTimeOffset Due
+    DateTimeOffset Due,
+    RepeatType Repeat
 );

@@ -9,7 +9,7 @@ public class AllTasksService(AppDbContext db)
 {
     public async Task<List<TaskItem>> GetAllTasksAsync(Guid userId)
     {
-        var tasks = await db.Tasks.Where(t => t.UserId == userId).Select(t=>new TaskItem(t.Id,t.Title,t.IsCompleted,t.Due)).ToListAsync();
+        var tasks = await db.Tasks.Where(t => t.UserId == userId).Select(t=>new TaskItem(t.Id,t.Title,t.IsCompleted,t.Due,t.Repeat)).ToListAsync();
         return tasks;
     }
 
@@ -23,7 +23,7 @@ public class AllTasksService(AppDbContext db)
         };
         await db.Tasks.AddAsync(newTask);
         await db.SaveChangesAsync();
-        return new TaskItem(newTask.Id,newTask.Title,newTask.IsCompleted,newTask.Due);
+        return new TaskItem(newTask.Id,newTask.Title,newTask.IsCompleted,newTask.Due,newTask.Repeat);
     }
 
     public async Task<TaskItem> ToggleTaskAsync(Guid userId,Guid taskId)
@@ -32,7 +32,7 @@ public class AllTasksService(AppDbContext db)
                    throw new NotFoundException("Task Not Found");
         task.IsCompleted = !task.IsCompleted;
         await db.SaveChangesAsync();
-        return new TaskItem(task.Id,task.Title,task.IsCompleted,task.Due);
+        return new TaskItem(task.Id,task.Title,task.IsCompleted,task.Due,task.Repeat);
     }
     
     public async Task<bool> DeleteTaskAsync(Guid userId,Guid taskId)

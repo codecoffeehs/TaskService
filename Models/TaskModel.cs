@@ -16,4 +16,15 @@ public class TaskModel
     public bool IsCompleted { get; set; } = false;
     
     public DateTimeOffset Due { get; set; }
+
+    public RepeatType Repeat {get;set;} = RepeatType.None;
+}
+
+public enum RepeatType
+{
+    None = 0,
+    Daily = 1,
+    EveryOtherDay = 2,
+    Weekly = 3,
+    Monthly = 4
 }

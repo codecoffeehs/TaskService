@@ -1,8 +1,10 @@
 namespace TaskService.Dtos;
+using TaskService.Models;
 
 public record TaskItem(
     Guid Id,
     string Title,
     bool IsCompleted,
-    DateTimeOffset Due
-    );
+    DateTimeOffset Due,
+    RepeatType RepeatType
+);
