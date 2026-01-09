@@ -1,7 +1,5 @@
 using System.Security.Claims;
-using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskService.Dtos;
 using TaskService.Exceptions;
@@ -18,7 +16,6 @@ namespace TaskService.Controllers;
         public async Task<IActionResult> GetTasks()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine($"User Id Claim - {userIdClaim}");
             if(!Guid.TryParse(userIdClaim, out var userId))
             {
                 throw new UnauthorizedException("Not Allowed");

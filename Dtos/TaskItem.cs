@@ -6,5 +6,7 @@ public record TaskItem(
     string Title,
     bool IsCompleted,
     DateTimeOffset Due,
-    RepeatType RepeatType
+    RepeatType RepeatType,
+    Guid CategoryId,
+    string CategoryTitle
 );

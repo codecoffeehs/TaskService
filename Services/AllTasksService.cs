@@ -10,17 +10,19 @@ public class AllTasksService(AppDbContext db)
     public async Task<List<TaskItem>> GetAllTasksAsync(Guid userId)
     {
         var tasks = await db.Tasks
-            .Where(t => t.UserId == userId)
+            .Where(t => t.UserId == userId && !t.IsCompleted)
             .OrderBy(t => t.IsCompleted)   // incomplete first
             .ThenBy(t => t.Due)            // earliest due date first
             .ThenBy(t => t.Repeat)         // non-repeating before repeating
-            .ThenBy(t => t.Title)          // stable ordering
+            .ThenBy(t => t.Title)        // stable ordering
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
                 t.IsCompleted,
                 t.Due,
-                t.Repeat
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title
             ))
             .ToListAsync();
 
@@ -28,28 +30,65 @@ public class AllTasksService(AppDbContext db)
     }
 
 
-    public async Task<TaskItem> CreateTaskAsync(Guid userId,CreateTaskDto dto)
+    public async Task<TaskItem> CreateTaskAsync(Guid userId, CreateTaskDto dto)
     {
         var newTask = new TaskModel
         {
             UserId = userId,
             Title = dto.Title,
             Due = dto.Due,
-            Repeat = dto.Repeat
+            Repeat = dto.Repeat,
+            TaskCategoryId = dto.TaskCategoryId
         };
+
         await db.Tasks.AddAsync(newTask);
         await db.SaveChangesAsync();
-        return new TaskItem(newTask.Id,newTask.Title,newTask.IsCompleted,newTask.Due,newTask.Repeat);
+
+        // Re-query to include category title
+        var task = await db.Tasks
+            .Where(t => t.Id == newTask.Id)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title
+            ))
+            .FirstAsync();
+
+        return task;
     }
 
-    public async Task<TaskItem> ToggleTaskAsync(Guid userId,Guid taskId)
+
+    public async Task<TaskItem> ToggleTaskAsync(Guid userId, Guid taskId)
     {
-        var task = await db.Tasks.Where(t => t.UserId == userId && t.Id == taskId).FirstOrDefaultAsync() ??
-                   throw new NotFoundException("Task Not Found");
+        var task = await db.Tasks
+            .Where(t => t.UserId == userId && t.Id == taskId)
+            .FirstOrDefaultAsync()
+            ?? throw new NotFoundException("Task Not Found");
+
         task.IsCompleted = !task.IsCompleted;
         await db.SaveChangesAsync();
-        return new TaskItem(task.Id,task.Title,task.IsCompleted,task.Due,task.Repeat);
+
+        // Re-query with category title
+        var result = await db.Tasks
+            .Where(t => t.Id == taskId)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title
+            ))
+            .FirstAsync();
+
+        return result;
     }
+
     
     public async Task<bool> DeleteTaskAsync(Guid userId,Guid taskId)
     {

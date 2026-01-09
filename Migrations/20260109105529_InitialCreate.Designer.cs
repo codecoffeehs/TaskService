@@ -12,8 +12,8 @@ using TaskService.Context;
 namespace TaskService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260109044113_AddedRepeatTypeInTask")]
-    partial class AddedRepeatTypeInTask
+    [Migration("20260109105529_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,32 @@ namespace TaskService.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("TaskService.Models.TaskCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("task_categories");
+                });
 
             modelBuilder.Entity("TaskService.Models.TaskModel", b =>
                 {
@@ -40,6 +66,9 @@ namespace TaskService.Migrations
                     b.Property<int>("Repeat")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("TaskCategoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -50,7 +79,20 @@ namespace TaskService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TaskCategoryId");
+
                     b.ToTable("tasks");
+                });
+
+            modelBuilder.Entity("TaskService.Models.TaskModel", b =>
+                {
+                    b.HasOne("TaskService.Models.TaskCategory", "TaskCategory")
+                        .WithMany()
+                        .HasForeignKey("TaskCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskCategory");
                 });
 #pragma warning restore 612, 618
         }

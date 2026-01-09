@@ -86,7 +86,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<AllTasksService>();
-
+builder.Services.AddScoped<TaskCategoryService>();
 // ✅ CORS
 builder.Services.AddCors(options =>
 {

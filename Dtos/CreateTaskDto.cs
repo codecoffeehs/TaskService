@@ -3,5 +3,6 @@ using TaskService.Models;
 public record CreateTaskDto(
     string Title,
     DateTimeOffset Due,
-    RepeatType Repeat
+    RepeatType Repeat,
+    Guid TaskCategoryId
 );

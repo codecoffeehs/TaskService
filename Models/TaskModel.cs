@@ -18,6 +18,9 @@ public class TaskModel
     public DateTimeOffset Due { get; set; }
 
     public RepeatType Repeat {get;set;} = RepeatType.None;
+    
+    public Guid TaskCategoryId {get;set;}
+    public TaskCategory TaskCategory {get;set;} = null!;
 }
 
 public enum RepeatType
