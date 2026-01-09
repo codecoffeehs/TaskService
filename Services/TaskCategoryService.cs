@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using TaskService.Context;
 using TaskService.Dtos;
 using TaskService.Exceptions;
@@ -19,18 +20,18 @@ public class TaskCategoryService(AppDbContext db)
     }
 
     // CREATE
-    public async Task<TaskCategoryResponse> CreateCategoryAsync(Guid userId,string title)
+    public async Task<TaskCategoryResponse> CreateCategoryAsync(Guid userId,CreateTaskCategory dto)
     {
 
         var exists = await db.TaskCategories
-            .AnyAsync(tc => tc.Title.ToLower() == title.ToLower() && tc.UserId == userId);
+            .AnyAsync(tc => tc.Title.ToLower() == dto.Title.ToLower() && tc.UserId == userId);
 
         if (exists)
             throw new BadRequestException("Category already exists");
 
         var newCategory = new TaskCategory
         {
-            Title = title
+            Title = dto.Title
         };
 
         await db.TaskCategories.AddAsync(newCategory);

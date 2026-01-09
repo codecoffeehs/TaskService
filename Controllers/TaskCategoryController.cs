@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TaskService.Dtos;
 using TaskService.Exceptions;
 using TaskService.Services;
 
@@ -33,10 +34,10 @@ namespace TaskService.Controllers
 
         // POST: /TaskCategory
         [HttpPost("create")]
-        public async Task<IActionResult> CreateCategory([FromBody] string title)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateTaskCategory dto)
         {
             var userId = GetUserId();
-            var category = await taskCategoryService.CreateCategoryAsync(userId, title);
+            var category = await taskCategoryService.CreateCategoryAsync(userId, dto);
             return CreatedAtAction(nameof(GetTaskCategories), new { id = category.Id }, category);
         }
 
