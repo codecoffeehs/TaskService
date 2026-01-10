@@ -31,6 +31,7 @@ public class TaskCategoryService(AppDbContext db)
 
         var newCategory = new TaskCategory
         {
+            UserId = userId,
             Title = dto.Title,
             Icon = dto.Icon,
             Color = dto.Color
