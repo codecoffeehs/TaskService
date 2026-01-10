@@ -31,7 +31,9 @@ public class TaskCategoryService(AppDbContext db)
 
         var newCategory = new TaskCategory
         {
-            Title = dto.Title
+            Title = dto.Title,
+            Icon = dto.Icon,
+            Color = dto.Color
         };
 
         await db.TaskCategories.AddAsync(newCategory);
