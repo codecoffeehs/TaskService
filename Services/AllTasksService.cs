@@ -50,75 +50,63 @@ public class AllTasksService(AppDbContext db)
         return tasks;
     }
     
-        public async Task<RecentTasksDto> GetRecentTasksAsync(Guid userId)
-{
-    var now = DateTimeOffset.UtcNow;
-    var todayStart = now.Date;
-    var todayEnd = todayStart.AddDays(1);
+    public async Task<RecentTasksDto> GetRecentTasksAsync(Guid userId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var todayStart = now.Date;
+        var todayEnd = todayStart.AddDays(1);
 
-    var baseQuery = db.Tasks
-        .AsNoTracking()
-        .Where(t => t.UserId == userId && !t.IsCompleted);
-
-    static IQueryable<TaskItem> Project(IQueryable<TaskModel> q)
-        => q.Select(t => new TaskItem(
-            t.Id,
-            t.Title,
-            t.IsCompleted,
-            t.Due,
-            t.Repeat,
-            t.TaskCategoryId,
-            t.TaskCategory.Title,
-            t.TaskCategory.Color,
-            t.TaskCategory.Icon
-        ));
-
-    // TODAY
-    var todayQuery = baseQuery.Where(t => t.Due >= todayStart && t.Due < todayEnd);
-
-    var todayCountTask = todayQuery.CountAsync();
-    var todayTasksTask = Project(todayQuery
+        // ONE query: load all relevant tasks (not completed) for overdue/today/upcoming
+        var tasks = await db.Tasks
+            .AsNoTracking()
+            .Where(t =>
+                t.UserId == userId &&
+                !t.IsCompleted
+            )
             .OrderBy(t => t.Due)
             .ThenBy(t => t.Repeat)
-            .ThenBy(t => t.Title))
-        .Take(5)
-        .ToListAsync();
+            .ThenBy(t => t.Title)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
 
-    // OVERDUE
-    var overdueQuery = baseQuery.Where(t => t.Due < todayStart);
+        // split in memory (fast)
+        var todayTasks = tasks
+            .Where(t => t.Due >= todayStart && t.Due < todayEnd)
+            .Take(5)
+            .ToList();
 
-    var overdueCountTask = overdueQuery.CountAsync();
-    var overdueTasksTask = Project(overdueQuery
-            .OrderBy(t => t.Due)
-            .ThenBy(t => t.Repeat)
-            .ThenBy(t => t.Title))
-        .Take(5)
-        .ToListAsync();
+        var overdueTasks = tasks
+            .Where(t => t.Due < todayStart)
+            .Take(5)
+            .ToList();
 
-    // UPCOMING
-    var upcomingQuery = baseQuery.Where(t => t.Due >= todayEnd);
+        var upcomingTasks = tasks
+            .Where(t => t.Due >= todayEnd)
+            .Take(5)
+            .ToList();
 
-    var upcomingCountTask = upcomingQuery.CountAsync();
-    var upcomingTasksTask = Project(upcomingQuery
-            .OrderBy(t => t.Due)
-            .ThenBy(t => t.Repeat)
-            .ThenBy(t => t.Title))
-        .Take(5)
-        .ToListAsync();
+        // counts
+        var todayCount = tasks.Count(t => t.Due >= todayStart && t.Due < todayEnd);
+        var overdueCount = tasks.Count(t => t.Due < todayStart);
+        var upcomingCount = tasks.Count(t => t.Due >= todayEnd);
 
-    // run queries in parallel (faster)
-    await Task.WhenAll(
-        todayCountTask, todayTasksTask,
-        overdueCountTask, overdueTasksTask,
-        upcomingCountTask, upcomingTasksTask
-    );
+        return new RecentTasksDto(
+            Today: new TasksSectionDto(todayCount, todayTasks),
+            Upcoming: new TasksSectionDto(upcomingCount, upcomingTasks),
+            Overdue: new TasksSectionDto(overdueCount, overdueTasks)
+        );
+    }
 
-    return new RecentTasksDto(
-        Today: new TasksSectionDto(todayCountTask.Result, todayTasksTask.Result),
-        Upcoming: new TasksSectionDto(upcomingCountTask.Result, upcomingTasksTask.Result),
-        Overdue: new TasksSectionDto(overdueCountTask.Result, overdueTasksTask.Result)
-    );
-}
 
 
 
