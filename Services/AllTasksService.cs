@@ -22,13 +22,57 @@ public class AllTasksService(AppDbContext db)
                 t.Due,
                 t.Repeat,
                 t.TaskCategoryId,
-                t.TaskCategory.Title
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
 
         return tasks;
     }
 
+    public async Task<List<TaskItem>> GetTasksForCategoryAsync(Guid userId, Guid taskCategoryId)
+    {
+        var tasks = await db.Tasks.Where(t=>t.TaskCategoryId == taskCategoryId && t.UserId == userId)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
+
+        return tasks;
+    }
+    
+     public async Task<List<TaskItem>> GetRecentTasksAsync(Guid userId)
+    {
+        var tasks = await db.Tasks
+            .Where(t => t.UserId == userId && !t.IsCompleted)
+            .OrderBy(t => t.IsCompleted)   // incomplete first
+            .ThenBy(t => t.Due)            // earliest due date first
+            .ThenBy(t => t.Repeat)         // non-repeating before repeating
+            .ThenBy(t => t.Title)        // stable ordering
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
+
+        return tasks;
+    }
 
     public async Task<TaskItem> CreateTaskAsync(Guid userId, CreateTaskDto dto)
     {
@@ -54,7 +98,9 @@ public class AllTasksService(AppDbContext db)
                 t.Due,
                 t.Repeat,
                 t.TaskCategoryId,
-                t.TaskCategory.Title
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
             ))
             .FirstAsync();
 
@@ -82,7 +128,9 @@ public class AllTasksService(AppDbContext db)
                 t.Due,
                 t.Repeat,
                 t.TaskCategoryId,
-                t.TaskCategory.Title
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
             ))
             .FirstAsync();
 

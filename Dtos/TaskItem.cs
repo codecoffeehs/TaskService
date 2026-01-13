@@ -8,5 +8,7 @@ public record TaskItem(
     DateTimeOffset Due,
     RepeatType RepeatType,
     Guid CategoryId,
-    string CategoryTitle
+    string CategoryTitle,
+    string Color,
+    string Icon
 );

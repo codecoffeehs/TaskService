@@ -24,6 +24,17 @@ namespace TaskService.Controllers;
             return Ok(result);
         }
 
+        [HttpGet("recent")]
+        public async Task<IActionResult> GetRecentTasks()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(!Guid.TryParse(userIdClaim, out var userId))
+            {
+                throw new UnauthorizedException("Not Allowed");
+            }
+            var result = await allTasksService.GetRecentTasksAsync(userId);
+            return Ok(result);
+        }
         [HttpPost("create")]
         public async Task<IActionResult> CreateTask([FromBody] CreateTaskDto createTaskDto)
         {
