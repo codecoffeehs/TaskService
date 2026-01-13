@@ -50,29 +50,77 @@ public class AllTasksService(AppDbContext db)
         return tasks;
     }
     
-     public async Task<List<TaskItem>> GetRecentTasksAsync(Guid userId)
-    {
-        var tasks = await db.Tasks
-            .Where(t => t.UserId == userId && !t.IsCompleted)
-            .OrderBy(t => t.IsCompleted)   // incomplete first
-            .ThenBy(t => t.Due)            // earliest due date first
-            .ThenBy(t => t.Repeat)         // non-repeating before repeating
-            .ThenBy(t => t.Title)        // stable ordering
-            .Select(t => new TaskItem(
-                t.Id,
-                t.Title,
-                t.IsCompleted,
-                t.Due,
-                t.Repeat,
-                t.TaskCategoryId,
-                t.TaskCategory.Title,
-                t.TaskCategory.Color,
-                t.TaskCategory.Icon
-            ))
-            .ToListAsync();
+        public async Task<RecentTasksDto> GetRecentTasksAsync(Guid userId)
+{
+    var now = DateTimeOffset.UtcNow;
+    var todayStart = now.Date;
+    var todayEnd = todayStart.AddDays(1);
 
-        return tasks;
-    }
+    var baseQuery = db.Tasks
+        .AsNoTracking()
+        .Where(t => t.UserId == userId && !t.IsCompleted);
+
+    static IQueryable<TaskItem> Project(IQueryable<TaskModel> q)
+        => q.Select(t => new TaskItem(
+            t.Id,
+            t.Title,
+            t.IsCompleted,
+            t.Due,
+            t.Repeat,
+            t.TaskCategoryId,
+            t.TaskCategory.Title,
+            t.TaskCategory.Color,
+            t.TaskCategory.Icon
+        ));
+
+    // TODAY
+    var todayQuery = baseQuery.Where(t => t.Due >= todayStart && t.Due < todayEnd);
+
+    var todayCountTask = todayQuery.CountAsync();
+    var todayTasksTask = Project(todayQuery
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Repeat)
+            .ThenBy(t => t.Title))
+        .Take(5)
+        .ToListAsync();
+
+    // OVERDUE
+    var overdueQuery = baseQuery.Where(t => t.Due < todayStart);
+
+    var overdueCountTask = overdueQuery.CountAsync();
+    var overdueTasksTask = Project(overdueQuery
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Repeat)
+            .ThenBy(t => t.Title))
+        .Take(5)
+        .ToListAsync();
+
+    // UPCOMING
+    var upcomingQuery = baseQuery.Where(t => t.Due >= todayEnd);
+
+    var upcomingCountTask = upcomingQuery.CountAsync();
+    var upcomingTasksTask = Project(upcomingQuery
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Repeat)
+            .ThenBy(t => t.Title))
+        .Take(5)
+        .ToListAsync();
+
+    // run queries in parallel (faster)
+    await Task.WhenAll(
+        todayCountTask, todayTasksTask,
+        overdueCountTask, overdueTasksTask,
+        upcomingCountTask, upcomingTasksTask
+    );
+
+    return new RecentTasksDto(
+        Today: new TasksSectionDto(todayCountTask.Result, todayTasksTask.Result),
+        Upcoming: new TasksSectionDto(upcomingCountTask.Result, upcomingTasksTask.Result),
+        Overdue: new TasksSectionDto(overdueCountTask.Result, overdueTasksTask.Result)
+    );
+}
+
+
 
     public async Task<TaskItem> CreateTaskAsync(Guid userId, CreateTaskDto dto)
     {
