@@ -219,5 +219,95 @@ public class AllTasksService(AppDbContext db)
                 task.TaskCategory.Icon
             );
 }
+public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
+{
+    var now = DateTimeOffset.UtcNow;
+    var todayStart = now.Date;
+    var todayEnd = todayStart.AddDays(1);
+
+    return await db.Tasks
+        .AsNoTracking()
+        .Where(t =>
+            t.UserId == userId &&
+            !t.IsCompleted &&
+            t.Due >= todayStart &&
+            t.Due < todayEnd
+        )
+        .OrderBy(t => t.Due)
+        .ThenBy(t => t.Repeat)
+        .ThenBy(t => t.Title)
+        .Select(t => new TaskItem(
+            t.Id,
+            t.Title,
+            t.IsCompleted,
+            t.Due,
+            t.Repeat,
+            t.TaskCategoryId,
+            t.TaskCategory.Title,
+            t.TaskCategory.Color,
+            t.TaskCategory.Icon
+        ))
+        .ToListAsync();
+}
+
+public async Task<List<TaskItem>> GetUpcomingTasksAsync(Guid userId)
+{
+    var now = DateTimeOffset.UtcNow;
+    var todayStart = now.Date;
+    var todayEnd = todayStart.AddDays(1);
+
+    return await db.Tasks
+        .AsNoTracking()
+        .Where(t =>
+            t.UserId == userId &&
+            !t.IsCompleted &&
+            t.Due >= todayEnd
+        )
+        .OrderBy(t => t.Due)
+        .ThenBy(t => t.Repeat)
+        .ThenBy(t => t.Title)
+        .Select(t => new TaskItem(
+            t.Id,
+            t.Title,
+            t.IsCompleted,
+            t.Due,
+            t.Repeat,
+            t.TaskCategoryId,
+            t.TaskCategory.Title,
+            t.TaskCategory.Color,
+            t.TaskCategory.Icon
+        ))
+        .ToListAsync();
+}
+
+public async Task<List<TaskItem>> GetOverdueTasksAsync(Guid userId)
+{
+    var now = DateTimeOffset.UtcNow;
+    var todayStart = now.Date;
+
+    return await db.Tasks
+        .AsNoTracking()
+        .Where(t =>
+            t.UserId == userId &&
+            !t.IsCompleted &&
+            t.Due < todayStart
+        )
+        .OrderBy(t => t.Due)
+        .ThenBy(t => t.Repeat)
+        .ThenBy(t => t.Title)
+        .Select(t => new TaskItem(
+            t.Id,
+            t.Title,
+            t.IsCompleted,
+            t.Due,
+            t.Repeat,
+            t.TaskCategoryId,
+            t.TaskCategory.Title,
+            t.TaskCategory.Color,
+            t.TaskCategory.Icon
+        ))
+        .ToListAsync();
+}
+
 
 }
