@@ -70,5 +70,17 @@ namespace TaskService.Controllers;
             var result = await allTasksService.DeleteTaskAsync(userId,taskId);
             return Ok(result);
         }
+
+        [HttpPatch("edit/{taskId}")]
+        public async Task<IActionResult> EditTask(Guid taskId,EditTaskRequest dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(!Guid.TryParse(userIdClaim, out var userId))
+            {
+                throw new UnauthorizedException("Not Allowed");
+            }
+            var result = await allTasksService.EditTaskAsync(userId,taskId,dto);
+            return Ok(result);
+        }
     }
 

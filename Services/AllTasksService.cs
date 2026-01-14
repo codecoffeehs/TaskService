@@ -182,4 +182,42 @@ public class AllTasksService(AppDbContext db)
         await db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<TaskItem> EditTaskAsync(Guid userId, Guid taskId, EditTaskRequest request)
+{
+    var task = await db.Tasks
+        .Where(t => t.UserId == userId && t.Id == taskId)
+        .FirstOrDefaultAsync()
+        ?? throw new NotFoundException("Task Not Found");
+
+    // Update only what frontend sends
+    if (request.Title != null)
+        task.Title = request.Title;
+
+
+    if (request.Due.HasValue)
+        task.Due = request.Due.Value;
+
+    if (request.IsCompleted.HasValue)
+        task.IsCompleted = request.IsCompleted.Value;
+
+    if(request.RepeatType.HasValue)
+        task.Repeat = request.RepeatType.Value;
+
+
+    await db.SaveChangesAsync();
+
+    return new  TaskItem(
+                task.Id,
+                task.Title,
+                task.IsCompleted,
+                task.Due,
+                task.Repeat,
+                task.TaskCategoryId,
+                task.TaskCategory.Title,
+                task.TaskCategory.Color,
+                task.TaskCategory.Icon
+            );
+}
+
 }
