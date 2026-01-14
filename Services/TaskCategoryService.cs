@@ -10,14 +10,29 @@ public class TaskCategoryService(AppDbContext db)
 {
     // READ (Get all categories)
     public async Task<List<TaskCategoryResponse>> GetCategoriesAsync(Guid userId)
+{
+    var categories = await db.TaskCategories
+        .AsNoTracking()
+        .Where(tc => tc.UserId == userId)
+        .OrderBy(tc => tc.Title)
+        .Select(tc => new TaskCategoryResponse(
+            tc.Id,
+            tc.Title,
+            tc.Color,
+            tc.Icon,
+            tc.Tasks.Count
+        ))
+        .ToListAsync();
+
+    // ✅ Log each category count
+    foreach (var c in categories)
     {
-        return await db.TaskCategories
-            .AsNoTracking()
-            .Where(tc=>tc.UserId == userId)
-            .OrderBy(tc => tc.Title)
-            .Select(tc => new TaskCategoryResponse(tc.Id, tc.Title,tc.Color,tc.Icon,tc.Tasks.Count))
-            .ToListAsync();
+        Console.WriteLine($"Category: {c.Title}, TasksCount: {c.TasksCount}");
     }
+
+    return categories;
+}
+
 
     // CREATE
     public async Task<TaskCategoryResponse> CreateCategoryAsync(Guid userId,CreateTaskCategory dto)
