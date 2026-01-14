@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using TaskService.Context;
 using TaskService.Dtos;
 using TaskService.Exceptions;
@@ -15,7 +14,7 @@ public class TaskCategoryService(AppDbContext db)
         return await db.TaskCategories
             .Where(tc=>tc.UserId == userId)
             .OrderBy(tc => tc.Title)
-            .Select(tc => new TaskCategoryResponse(tc.Id, tc.Title,tc.Color,tc.Icon))
+            .Select(tc => new TaskCategoryResponse(tc.Id, tc.Title,tc.Color,tc.Icon,tc.Tasks.Count))
             .ToListAsync();
     }
 
@@ -40,7 +39,7 @@ public class TaskCategoryService(AppDbContext db)
         await db.TaskCategories.AddAsync(newCategory);
         await db.SaveChangesAsync();
 
-        return new TaskCategoryResponse(newCategory.Id, newCategory.Title,newCategory.Color,newCategory.Icon);
+        return new TaskCategoryResponse(newCategory.Id, newCategory.Title,newCategory.Color,newCategory.Icon,null);
     }
 
     // UPDATE
@@ -53,7 +52,7 @@ public class TaskCategoryService(AppDbContext db)
         category.Title = title;
         await db.SaveChangesAsync();
 
-        return new TaskCategoryResponse(category.Id, category.Title,category.Color,category.Icon);
+        return new TaskCategoryResponse(category.Id, category.Title,category.Color,category.Icon,null);
     }
 
     // DELETE
