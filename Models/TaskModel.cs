@@ -7,20 +7,20 @@ namespace TaskService.Models;
 public class TaskModel
 {
     public Guid Id { get; init; }
-    
+
     public Guid UserId { get; init; }
-    
+
     [MaxLength(200)]
     public string Title { get; set; } = null!;
 
     public bool IsCompleted { get; set; } = false;
-    
+
     public DateTimeOffset Due { get; set; }
 
-    public RepeatType Repeat {get;set;} = RepeatType.None;
-    
-    public Guid TaskCategoryId {get;set;}
-    public TaskCategory TaskCategory {get;set;} = null!;
+    public RepeatType Repeat { get; set; } = RepeatType.None;
+
+    public Guid TaskCategoryId { get; set; }
+    public TaskCategory TaskCategory { get; set; } = null!;
 }
 
 public enum RepeatType

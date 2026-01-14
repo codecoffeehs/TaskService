@@ -137,4 +137,16 @@ public class TaskController(AllTasksService allTasksService) : ControllerBase
         var result = await allTasksService.EditTaskAsync(userId, taskId, dto);
         return Ok(result);
     }
+
+    [HttpGet("{categoryId}")]
+    public async Task<IActionResult> GetTaskForCategory(Guid categoryId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            throw new UnauthorizedException("Not Allowed");
+
+        var result = await allTasksService.GetTasksForCategoryAsync(userId, categoryId);
+        return Ok(result);
+    }
 }

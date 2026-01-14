@@ -10,24 +10,24 @@ public class TaskCategoryService(AppDbContext db)
 {
     // READ (Get all categories)
     public async Task<List<TaskCategoryResponse>> GetCategoriesAsync(Guid userId)
-{
-    return await db.TaskCategories
-        .AsNoTracking()
-        .Where(tc => tc.UserId == userId)
-        .OrderBy(tc => tc.Title)
-        .Select(tc => new TaskCategoryResponse(
-            tc.Id,
-            tc.Title,
-            tc.Color,
-            tc.Icon,
-            tc.Tasks.Count
-        ))
-        .ToListAsync();
-}
+    {
+        return await db.TaskCategories
+            .AsNoTracking()
+            .Where(tc => tc.UserId == userId)
+            .OrderBy(tc => tc.Title)
+            .Select(tc => new TaskCategoryResponse(
+                tc.Id,
+                tc.Title,
+                tc.Color,
+                tc.Icon,
+                tc.Tasks.Count
+            ))
+            .ToListAsync();
+    }
 
 
     // CREATE
-    public async Task<TaskCategoryResponse> CreateCategoryAsync(Guid userId,CreateTaskCategory dto)
+    public async Task<TaskCategoryResponse> CreateCategoryAsync(Guid userId, CreateTaskCategory dto)
     {
 
         var exists = await db.TaskCategories
@@ -47,7 +47,7 @@ public class TaskCategoryService(AppDbContext db)
         await db.TaskCategories.AddAsync(newCategory);
         await db.SaveChangesAsync();
 
-        return new TaskCategoryResponse(newCategory.Id, newCategory.Title,newCategory.Color,newCategory.Icon,newCategory.Tasks.Count);
+        return new TaskCategoryResponse(newCategory.Id, newCategory.Title, newCategory.Color, newCategory.Icon, newCategory.Tasks.Count);
     }
 
     // UPDATE
@@ -60,7 +60,7 @@ public class TaskCategoryService(AppDbContext db)
         category.Title = title;
         await db.SaveChangesAsync();
 
-        return new TaskCategoryResponse(category.Id, category.Title,category.Color,category.Icon,category.Tasks.Count);
+        return new TaskCategoryResponse(category.Id, category.Title, category.Color, category.Icon, category.Tasks.Count);
     }
 
     // DELETE

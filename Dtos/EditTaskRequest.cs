@@ -4,7 +4,7 @@ namespace TaskService.Dtos;
 
 public record EditTaskRequest
 (
-    string? Title ,
+    string? Title,
     DateTimeOffset? Due,
     bool? IsCompleted,
     RepeatType? RepeatType

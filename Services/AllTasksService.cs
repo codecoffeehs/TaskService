@@ -33,7 +33,7 @@ public class AllTasksService(AppDbContext db)
 
     public async Task<List<TaskItem>> GetTasksForCategoryAsync(Guid userId, Guid taskCategoryId)
     {
-        var tasks = await db.Tasks.Where(t=>t.TaskCategoryId == taskCategoryId && t.UserId == userId)
+        var tasks = await db.Tasks.Where(t => t.TaskCategoryId == taskCategoryId && t.UserId == userId)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
@@ -49,7 +49,7 @@ public class AllTasksService(AppDbContext db)
 
         return tasks;
     }
-    
+
     public async Task<RecentTasksDto> GetRecentTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
@@ -173,8 +173,8 @@ public class AllTasksService(AppDbContext db)
         return result;
     }
 
-    
-    public async Task<bool> DeleteTaskAsync(Guid userId,Guid taskId)
+
+    public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)
     {
         var task = await db.Tasks.Where(t => t.UserId == userId && t.Id == taskId).FirstOrDefaultAsync() ??
                    throw new NotFoundException("Task Not Found");
@@ -184,130 +184,130 @@ public class AllTasksService(AppDbContext db)
     }
 
     public async Task<TaskItem> EditTaskAsync(Guid userId, Guid taskId, EditTaskRequest request)
-{
-    var task = await db.Tasks
-        .Where(t => t.UserId == userId && t.Id == taskId)
-        .FirstOrDefaultAsync()
-        ?? throw new NotFoundException("Task Not Found");
+    {
+        var task = await db.Tasks
+            .Where(t => t.UserId == userId && t.Id == taskId)
+            .FirstOrDefaultAsync()
+            ?? throw new NotFoundException("Task Not Found");
 
-    // Update only what frontend sends
-    if (request.Title != null)
-        task.Title = request.Title;
-
-
-    if (request.Due.HasValue)
-        task.Due = request.Due.Value;
-
-    if (request.IsCompleted.HasValue)
-        task.IsCompleted = request.IsCompleted.Value;
-
-    if(request.RepeatType.HasValue)
-        task.Repeat = request.RepeatType.Value;
+        // Update only what frontend sends
+        if (request.Title != null)
+            task.Title = request.Title;
 
 
-    await db.SaveChangesAsync();
+        if (request.Due.HasValue)
+            task.Due = request.Due.Value;
 
-    return new  TaskItem(
-                task.Id,
-                task.Title,
-                task.IsCompleted,
-                task.Due,
-                task.Repeat,
-                task.TaskCategoryId,
-                task.TaskCategory.Title,
-                task.TaskCategory.Color,
-                task.TaskCategory.Icon
-            );
-}
-public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
-{
-    var now = DateTimeOffset.UtcNow;
-    var todayStart = now.Date;
-    var todayEnd = todayStart.AddDays(1);
+        if (request.IsCompleted.HasValue)
+            task.IsCompleted = request.IsCompleted.Value;
 
-    return await db.Tasks
-        .AsNoTracking()
-        .Where(t =>
-            t.UserId == userId &&
-            !t.IsCompleted &&
-            t.Due >= todayStart &&
-            t.Due < todayEnd
-        )
-        .OrderBy(t => t.Due)
-        .ThenBy(t => t.Repeat)
-        .ThenBy(t => t.Title)
-        .Select(t => new TaskItem(
-            t.Id,
-            t.Title,
-            t.IsCompleted,
-            t.Due,
-            t.Repeat,
-            t.TaskCategoryId,
-            t.TaskCategory.Title,
-            t.TaskCategory.Color,
-            t.TaskCategory.Icon
-        ))
-        .ToListAsync();
-}
+        if (request.RepeatType.HasValue)
+            task.Repeat = request.RepeatType.Value;
 
-public async Task<List<TaskItem>> GetUpcomingTasksAsync(Guid userId)
-{
-    var now = DateTimeOffset.UtcNow;
-    var todayStart = now.Date;
-    var todayEnd = todayStart.AddDays(1);
 
-    return await db.Tasks
-        .AsNoTracking()
-        .Where(t =>
-            t.UserId == userId &&
-            !t.IsCompleted &&
-            t.Due >= todayEnd
-        )
-        .OrderBy(t => t.Due)
-        .ThenBy(t => t.Repeat)
-        .ThenBy(t => t.Title)
-        .Select(t => new TaskItem(
-            t.Id,
-            t.Title,
-            t.IsCompleted,
-            t.Due,
-            t.Repeat,
-            t.TaskCategoryId,
-            t.TaskCategory.Title,
-            t.TaskCategory.Color,
-            t.TaskCategory.Icon
-        ))
-        .ToListAsync();
-}
+        await db.SaveChangesAsync();
 
-public async Task<List<TaskItem>> GetOverdueTasksAsync(Guid userId)
-{
-    var now = DateTimeOffset.UtcNow;
-    var todayStart = now.Date;
+        return new TaskItem(
+                    task.Id,
+                    task.Title,
+                    task.IsCompleted,
+                    task.Due,
+                    task.Repeat,
+                    task.TaskCategoryId,
+                    task.TaskCategory.Title,
+                    task.TaskCategory.Color,
+                    task.TaskCategory.Icon
+                );
+    }
+    public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var todayStart = now.Date;
+        var todayEnd = todayStart.AddDays(1);
 
-    return await db.Tasks
-        .AsNoTracking()
-        .Where(t =>
-            t.UserId == userId &&
-            !t.IsCompleted &&
-            t.Due < todayStart
-        )
-        .OrderBy(t => t.Due)
-        .ThenBy(t => t.Repeat)
-        .ThenBy(t => t.Title)
-        .Select(t => new TaskItem(
-            t.Id,
-            t.Title,
-            t.IsCompleted,
-            t.Due,
-            t.Repeat,
-            t.TaskCategoryId,
-            t.TaskCategory.Title,
-            t.TaskCategory.Color,
-            t.TaskCategory.Icon
-        ))
-        .ToListAsync();
-}
+        return await db.Tasks
+            .AsNoTracking()
+            .Where(t =>
+                t.UserId == userId &&
+                !t.IsCompleted &&
+                t.Due >= todayStart &&
+                t.Due < todayEnd
+            )
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Repeat)
+            .ThenBy(t => t.Title)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<List<TaskItem>> GetUpcomingTasksAsync(Guid userId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var todayStart = now.Date;
+        var todayEnd = todayStart.AddDays(1);
+
+        return await db.Tasks
+            .AsNoTracking()
+            .Where(t =>
+                t.UserId == userId &&
+                !t.IsCompleted &&
+                t.Due >= todayEnd
+            )
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Repeat)
+            .ThenBy(t => t.Title)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<List<TaskItem>> GetOverdueTasksAsync(Guid userId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var todayStart = now.Date;
+
+        return await db.Tasks
+            .AsNoTracking()
+            .Where(t =>
+                t.UserId == userId &&
+                !t.IsCompleted &&
+                t.Due < todayStart
+            )
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Repeat)
+            .ThenBy(t => t.Title)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
+    }
 
 
 }
