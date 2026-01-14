@@ -5,5 +5,5 @@ public record TaskCategoryResponse(
     string Title,
     string Color,
     string Icon,
-    int? TasksCount
+    int TasksCount
 );
