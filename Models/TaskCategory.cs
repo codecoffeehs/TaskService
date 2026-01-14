@@ -13,5 +13,5 @@ public class TaskCategory
 
     public string Icon {get;set;} = null!;
     public Guid UserId {get;set;}
-    public ICollection<TaskModel> Tasks = [];
+    public ICollection<TaskModel> Tasks {get;set;}= [];
 }
