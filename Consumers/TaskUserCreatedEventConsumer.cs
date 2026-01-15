@@ -1,6 +1,5 @@
 using Shared.Contracts;
 using MassTransit;
-using TaskService.Contracts;
 using TaskService.Dtos;
 using TaskService.Services;
 
