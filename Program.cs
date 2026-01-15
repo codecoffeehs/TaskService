@@ -3,14 +3,14 @@
 // using CatalogService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Auth.Shared;
 using TaskService.Utils;
 using MassTransit;
 using TaskService.Context;
 using TaskService.Services;
-// using CatalogService.Consumers;
+using TaskService.Consumers;
+
 
 
 
@@ -20,28 +20,30 @@ builder.Services.AddSharedJwtAuth(builder.Configuration);
 
 builder.Services.AddControllers();
 
-// builder.Services.AddMassTransit(x =>
-// {
-//     
-//     x.SetEndpointNameFormatter(
-//         new KebabCaseEndpointNameFormatter("task", false)
-//     );
-//
-//     x.UsingRabbitMq((context, cfg) =>
-//     {
-//         var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
-//         var user = Environment.GetEnvironmentVariable("RABBITMQ_USER") ?? "guest";
-//         var pass = Environment.GetEnvironmentVariable("RABBITMQ_PASS") ?? "guest";
-//         cfg.Host(host, "/", h =>
-//         {
-//             h.Username(user);
-//             h.Password(pass);
-//         });
-//         
-//         cfg.ConfigureEndpoints(context);
-//
-//     });
-// });
+builder.Services.AddMassTransit(x =>
+{
+
+    x.AddConsumer<TaskUserCreatedEventConsumer>();
+
+    x.SetEndpointNameFormatter(
+        new KebabCaseEndpointNameFormatter("task", false)
+    );
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
+        var user = Environment.GetEnvironmentVariable("RABBITMQ_USER") ?? "guest";
+        var pass = Environment.GetEnvironmentVariable("RABBITMQ_PASS") ?? "guest";
+        cfg.Host(host, "/", h =>
+        {
+            h.Username(user);
+            h.Password(pass);
+        });
+
+        cfg.ConfigureEndpoints(context);
+
+    });
+});
 
 
 // Add Swagger/OpenAPI with Bearer authentication
