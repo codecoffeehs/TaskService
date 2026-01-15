@@ -6,7 +6,7 @@ namespace TaskService.Models;
 [Table("tasks")]
 public class TaskModel
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; init; } = Guid.NewGuid();
 
     public Guid CreatedByUserId { get; init; }
 

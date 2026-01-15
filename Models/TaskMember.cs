@@ -8,7 +8,7 @@ namespace TaskService.Models;
 [Index(nameof(TaskId), nameof(UserId), IsUnique = true)]
 public class TaskMember
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; init; } = Guid.NewGuid();
 
     public Guid TaskId { get; set; }
     public TaskModel Task { get; set; } = null!;

@@ -66,6 +66,8 @@ public class TaskCollabService(AppDbContext db)
             .FirstOrDefaultAsync(m => m.TaskId == taskId && m.UserId == userId)
             ?? throw new NotFoundException("Invite not found.");
 
+        if (invite.Status != TaskMemberStatus.Pending)
+            throw new BadRequestException("Invite is not pending.");
         invite.Status = TaskMemberStatus.Rejected;
         await db.SaveChangesAsync();
     }

@@ -5,7 +5,7 @@ namespace TaskService.Models;
 [Table("task_categories")]
 public class TaskCategory
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; init; } = Guid.NewGuid();
 
     public string Title { get; set; } = null!;
 
