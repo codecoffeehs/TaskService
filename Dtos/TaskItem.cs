@@ -1,4 +1,5 @@
 namespace TaskService.Dtos;
+
 using TaskService.Models;
 
 public record TaskItem(
@@ -10,5 +11,7 @@ public record TaskItem(
     Guid CategoryId,
     string CategoryTitle,
     string Color,
-    string Icon
+    string Icon,
+    bool? IsShared,
+    int? SharedWithCount
 );

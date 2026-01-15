@@ -25,7 +25,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                null,
+                null
             ))
             .ToListAsync();
 
@@ -44,7 +46,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .ToListAsync();
 
@@ -76,7 +80,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .ToListAsync();
 
@@ -137,7 +143,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .FirstAsync();
 
@@ -167,7 +175,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .FirstAsync();
 
@@ -217,7 +227,9 @@ public class AllTasksService(AppDbContext db)
                     task.TaskCategoryId,
                     task.TaskCategory.Title,
                     task.TaskCategory.Color,
-                    task.TaskCategory.Icon
+                    task.TaskCategory.Icon,
+                    task.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                    task.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
                 );
     }
     public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
@@ -246,7 +258,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .ToListAsync();
     }
@@ -276,7 +290,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .ToListAsync();
     }
@@ -305,7 +321,9 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
             ))
             .ToListAsync();
     }
