@@ -1,5 +1,7 @@
 namespace Shared.Contracts;
 
 public record TaskUserCreated(
-        Guid UserId
+    Guid UserId,
+    string FullName,
+    string Email
 );
