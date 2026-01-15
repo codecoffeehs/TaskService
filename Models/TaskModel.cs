@@ -8,7 +8,7 @@ public class TaskModel
 {
     public Guid Id { get; init; }
 
-    public Guid UserId { get; init; }
+    public Guid CreatedByUserId { get; init; }
 
     [MaxLength(200)]
     public string Title { get; set; } = null!;
@@ -21,6 +21,8 @@ public class TaskModel
 
     public Guid TaskCategoryId { get; set; }
     public TaskCategory TaskCategory { get; set; } = null!;
+
+    public ICollection<TaskMember> TaskMembers { get; set; } = [];
 }
 
 public enum RepeatType

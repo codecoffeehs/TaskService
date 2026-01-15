@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TaskService.Context;
 using TaskService.Dtos;
@@ -10,7 +11,7 @@ public class AllTasksService(AppDbContext db)
     public async Task<List<TaskItem>> GetAllTasksAsync(Guid userId)
     {
         var tasks = await db.Tasks
-            .Where(t => t.UserId == userId && !t.IsCompleted)
+            .Where(t => t.CreatedByUserId == userId && !t.IsCompleted)
             .OrderBy(t => t.IsCompleted)   // incomplete first
             .ThenBy(t => t.Due)            // earliest due date first
             .ThenBy(t => t.Repeat)         // non-repeating before repeating
@@ -33,7 +34,7 @@ public class AllTasksService(AppDbContext db)
 
     public async Task<List<TaskItem>> GetTasksForCategoryAsync(Guid userId, Guid taskCategoryId)
     {
-        var tasks = await db.Tasks.Where(t => t.TaskCategoryId == taskCategoryId && t.UserId == userId)
+        var tasks = await db.Tasks.Where(t => t.TaskCategoryId == taskCategoryId && t.CreatedByUserId == userId)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
@@ -60,7 +61,7 @@ public class AllTasksService(AppDbContext db)
         var tasks = await db.Tasks
             .AsNoTracking()
             .Where(t =>
-                t.UserId == userId &&
+                t.CreatedByUserId == userId &&
                 !t.IsCompleted
             )
             .OrderBy(t => t.Due)
@@ -114,7 +115,7 @@ public class AllTasksService(AppDbContext db)
     {
         var newTask = new TaskModel
         {
-            UserId = userId,
+            CreatedByUserId = userId,
             Title = dto.Title,
             Due = dto.Due,
             Repeat = dto.Repeat,
@@ -147,7 +148,7 @@ public class AllTasksService(AppDbContext db)
     public async Task<TaskItem> ToggleTaskAsync(Guid userId, Guid taskId)
     {
         var task = await db.Tasks
-            .Where(t => t.UserId == userId && t.Id == taskId)
+            .Where(t => t.CreatedByUserId == userId && t.Id == taskId)
             .FirstOrDefaultAsync()
             ?? throw new NotFoundException("Task Not Found");
 
@@ -176,7 +177,7 @@ public class AllTasksService(AppDbContext db)
 
     public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)
     {
-        var task = await db.Tasks.Where(t => t.UserId == userId && t.Id == taskId).FirstOrDefaultAsync() ??
+        var task = await db.Tasks.Where(t => t.CreatedByUserId == userId && t.Id == taskId).FirstOrDefaultAsync() ??
                    throw new NotFoundException("Task Not Found");
         db.Tasks.Remove(task);
         await db.SaveChangesAsync();
@@ -186,7 +187,7 @@ public class AllTasksService(AppDbContext db)
     public async Task<TaskItem> EditTaskAsync(Guid userId, Guid taskId, EditTaskRequest request)
     {
         var task = await db.Tasks
-            .Where(t => t.UserId == userId && t.Id == taskId)
+            .Where(t => t.CreatedByUserId == userId && t.Id == taskId)
             .FirstOrDefaultAsync()
             ?? throw new NotFoundException("Task Not Found");
 
@@ -228,7 +229,7 @@ public class AllTasksService(AppDbContext db)
         return await db.Tasks
             .AsNoTracking()
             .Where(t =>
-                t.UserId == userId &&
+                t.CreatedByUserId == userId &&
                 !t.IsCompleted &&
                 t.Due >= todayStart &&
                 t.Due < todayEnd
@@ -259,7 +260,7 @@ public class AllTasksService(AppDbContext db)
         return await db.Tasks
             .AsNoTracking()
             .Where(t =>
-                t.UserId == userId &&
+                t.CreatedByUserId == userId &&
                 !t.IsCompleted &&
                 t.Due >= todayEnd
             )
@@ -288,7 +289,7 @@ public class AllTasksService(AppDbContext db)
         return await db.Tasks
             .AsNoTracking()
             .Where(t =>
-                t.UserId == userId &&
+                t.CreatedByUserId == userId &&
                 !t.IsCompleted &&
                 t.Due < todayStart
             )
@@ -308,6 +309,5 @@ public class AllTasksService(AppDbContext db)
             ))
             .ToListAsync();
     }
-
 
 }
