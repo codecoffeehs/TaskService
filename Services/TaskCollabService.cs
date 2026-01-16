@@ -95,4 +95,59 @@ public class TaskCollabService(AppDbContext db)
         db.TaskMembers.Remove(invite);
         await db.SaveChangesAsync();
     }
+
+    public async Task<List<SharedTaskItem>> GetSharedTasksAsync(Guid userId)
+    {
+        return await db.Tasks
+            .AsNoTracking()
+            .Where(t =>
+                t.CreatedByUserId != userId &&
+                t.TaskMembers.Any(m =>
+                    m.UserId == userId &&
+                    m.Status == TaskMemberStatus.Accepted
+                )
+            )
+            .OrderBy(t => t.Due)
+            .ThenBy(t => t.Title)
+            .Select(t => new SharedTaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon,
+                t.CreatedByUserId,
+                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted)
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<List<SharedTaskItem>> GetSharedTaskRequestsAsync(Guid userId)
+    {
+        return await db.TaskMembers
+            .AsNoTracking()
+            .Where(m =>
+                m.UserId == userId &&
+                m.Status == TaskMemberStatus.Pending
+            )
+            .OrderByDescending(m => m.Id) // better: order by CreatedAt if you add it
+            .Select(m => new SharedTaskItem(
+               m.Id,
+               m.Task.Title,
+               m.Task.IsCompleted,
+               m.Task.Due,
+               m.Task.Repeat,
+               m.Task.TaskCategoryId,
+               m.Task.TaskCategory.Title,
+               m.Task.TaskCategory.Color,
+               m.Task.TaskCategory.Icon,
+               m.Task.CreatedByUserId,
+               null
+            ))
+            .ToListAsync();
+    }
+
 }

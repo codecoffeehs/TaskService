@@ -52,5 +52,21 @@ namespace TaskService.Controllers
             await taskCollabService.CancelTaskInviteAsync(userId, taskId, dto);
             return Ok("Invite Cancelled");
         }
+
+        [HttpGet("shared")]
+        public async Task<IActionResult> GetSharedTasks()
+        {
+            var userId = GetUserId();
+            var results = await taskCollabService.GetSharedTasksAsync(userId);
+            return Ok(results);
+        }
+
+        [HttpGet("requests")]
+        public async Task<IActionResult> GetSharedRequests()
+        {
+            var userId = GetUserId();
+            var results = await taskCollabService.GetSharedTaskRequestsAsync(userId);
+            return Ok(results);
+        }
     }
 }
