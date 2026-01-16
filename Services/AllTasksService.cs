@@ -58,8 +58,9 @@ public class AllTasksService(AppDbContext db)
     public async Task<RecentTasksDto> GetRecentTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
-        var todayStart = now.Date;
+        var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
         var todayEnd = todayStart.AddDays(1);
+
 
         // ONE query: load all relevant tasks (not completed) for overdue/today/upcoming
         var tasks = await db.Tasks
@@ -235,8 +236,9 @@ public class AllTasksService(AppDbContext db)
     public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
-        var todayStart = now.Date;
+        var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
         var todayEnd = todayStart.AddDays(1);
+
 
         return await db.Tasks
             .AsNoTracking()
@@ -267,7 +269,7 @@ public class AllTasksService(AppDbContext db)
     public async Task<List<TaskItem>> GetUpcomingTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
-        var todayStart = now.Date;
+        var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
         var todayEnd = todayStart.AddDays(1);
 
         return await db.Tasks
@@ -298,7 +300,7 @@ public class AllTasksService(AppDbContext db)
     public async Task<List<TaskItem>> GetOverdueTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
-        var todayStart = now.Date;
+        var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
 
         return await db.Tasks
             .AsNoTracking()
