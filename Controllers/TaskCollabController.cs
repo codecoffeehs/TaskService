@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskService.Dtos;
@@ -7,6 +8,7 @@ using TaskService.Services;
 
 namespace TaskService.Controllers
 {
+    [Authorize(Policy = "UserPolicy", Roles = "TaskUser")]
     [Route("[controller]")]
     [ApiController]
     public class TaskCollabController(TaskCollabService taskCollabService) : ControllerBase
