@@ -242,7 +242,6 @@ public class AllTasksService(AppDbContext db)
             .AsNoTracking()
             .Where(t =>
                 t.CreatedByUserId == userId &&
-                !t.IsCompleted &&
                 t.Due >= todayStart &&
                 t.Due < todayEnd
             )
@@ -275,7 +274,6 @@ public class AllTasksService(AppDbContext db)
             .AsNoTracking()
             .Where(t =>
                 t.CreatedByUserId == userId &&
-                !t.IsCompleted &&
                 t.Due >= todayEnd
             )
             .OrderBy(t => t.Due)
@@ -306,7 +304,6 @@ public class AllTasksService(AppDbContext db)
             .AsNoTracking()
             .Where(t =>
                 t.CreatedByUserId == userId &&
-                !t.IsCompleted &&
                 t.Due < todayStart
             )
             .OrderBy(t => t.Due)
