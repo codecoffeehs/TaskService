@@ -127,9 +127,9 @@ public class AllTasksService(AppDbContext db)
         {
             CreatedByUserId = userId,
             Title = dto.Title,
+            TaskCategoryId = dto.TaskCategoryId,
             Due = dto.Due,
-            Repeat = dto.Repeat,
-            TaskCategoryId = dto.TaskCategoryId
+            Repeat = dto.Repeat
         };
 
         await db.Tasks.AddAsync(newTask);
