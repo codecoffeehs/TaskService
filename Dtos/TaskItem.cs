@@ -12,6 +12,7 @@ public record TaskItem(
     string CategoryTitle,
     string Color,
     string Icon,
-    bool? IsShared,
-    int? SharedWithCount
+    bool IsShared,
+    int SharedWithCount,
+    List<Guid> SharedWithUserIds
 );
