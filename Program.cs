@@ -89,7 +89,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<AllTasksService>();
 builder.Services.AddScoped<TaskCategoryService>();
-builder.Services.AddScoped<TaskCollabService>();
 // ✅ CORS
 builder.Services.AddCors(options =>
 {

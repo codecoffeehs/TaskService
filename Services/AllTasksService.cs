@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TaskService.Context;
 using TaskService.Dtos;
@@ -25,10 +24,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
 
@@ -47,10 +43,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
 
@@ -83,10 +76,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
 
@@ -147,10 +137,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .FirstAsync();
 
@@ -180,10 +167,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .FirstAsync();
 
@@ -233,11 +217,8 @@ public class AllTasksService(AppDbContext db)
                     task.TaskCategoryId,
                     task.TaskCategory.Title,
                     task.TaskCategory.Color,
-                    task.TaskCategory.Icon,
-                    task.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                    task.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                    task.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
-                );
+                    task.TaskCategory.Icon
+        );
     }
     public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
     {
@@ -265,10 +246,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
     }
@@ -297,10 +275,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
     }
@@ -328,10 +303,7 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon,
-                t.TaskMembers.Any(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Count(m => m.Status == TaskMemberStatus.Accepted),
-                t.TaskMembers.Where(t => t.Status == TaskMemberStatus.Accepted).Select(t => t.UserId).ToList()
+                t.TaskCategory.Icon
             ))
             .ToListAsync();
     }

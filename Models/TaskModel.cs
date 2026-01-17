@@ -15,14 +15,13 @@ public class TaskModel
 
     public bool IsCompleted { get; set; } = false;
 
-    public DateTimeOffset Due { get; set; }
+    public DateTimeOffset? Due { get; set; }
 
-    public RepeatType Repeat { get; set; } = RepeatType.None;
+    public RepeatType? Repeat { get; set; } = RepeatType.None;
 
     public Guid TaskCategoryId { get; set; }
     public TaskCategory TaskCategory { get; set; } = null!;
 
-    public ICollection<TaskMember> TaskMembers { get; set; } = [];
 }
 
 public enum RepeatType

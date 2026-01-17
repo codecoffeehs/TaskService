@@ -6,13 +6,10 @@ public record TaskItem(
     Guid Id,
     string Title,
     bool IsCompleted,
-    DateTimeOffset Due,
-    RepeatType RepeatType,
+    DateTimeOffset? Due,
+    RepeatType? RepeatType,
     Guid CategoryId,
     string CategoryTitle,
     string Color,
-    string Icon,
-    bool IsShared,
-    int SharedWithCount,
-    List<Guid> SharedWithUserIds
+    string Icon
 );

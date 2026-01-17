@@ -8,5 +8,4 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<TaskModel> Tasks { get; set; }
     public DbSet<TaskCategory> TaskCategories { get; set; }
-    public DbSet<TaskMember> TaskMembers { get; set; }
 }
