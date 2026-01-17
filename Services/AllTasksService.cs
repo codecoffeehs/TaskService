@@ -56,16 +56,11 @@ public class AllTasksService(AppDbContext db)
         var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
         var todayEnd = todayStart.AddDays(1);
 
-
-        // ONE query: load all relevant tasks (not completed) for overdue/today/upcoming
         var tasks = await db.Tasks
             .AsNoTracking()
-            .Where(t =>
-                t.CreatedByUserId == userId &&
-                !t.IsCompleted
-            )
-            .OrderBy(t => t.Due)
-            .ThenBy(t => t.Repeat)
+            .Where(t => t.CreatedByUserId == userId && !t.IsCompleted)
+            .OrderBy(t => t.Due == null)          // due tasks first, no-due last
+            .ThenBy(t => t.Due)
             .ThenBy(t => t.Title)
             .Select(t => new TaskItem(
                 t.Id,
@@ -80,33 +75,38 @@ public class AllTasksService(AppDbContext db)
             ))
             .ToListAsync();
 
-        // split in memory (fast)
-        var todayTasks = tasks
-            .Where(t => t.Due >= todayStart && t.Due < todayEnd)
+        // due tasks only
+        var dueTasks = tasks.Where(t => t.Due.HasValue).ToList();
+        var noDueTasks = tasks.Where(t => !t.Due.HasValue).Take(5).ToList();
+
+        var todayTasks = dueTasks
+            .Where(t => t.Due!.Value >= todayStart && t.Due!.Value < todayEnd)
             .Take(5)
             .ToList();
 
-        var overdueTasks = tasks
-            .Where(t => t.Due < todayStart)
+        var overdueTasks = dueTasks
+            .Where(t => t.Due!.Value < todayStart)
             .Take(5)
             .ToList();
 
-        var upcomingTasks = tasks
-            .Where(t => t.Due >= todayEnd)
+        var upcomingTasks = dueTasks
+            .Where(t => t.Due!.Value >= todayEnd)
             .Take(5)
             .ToList();
 
-        // counts
-        var todayCount = tasks.Count(t => t.Due >= todayStart && t.Due < todayEnd);
-        var overdueCount = tasks.Count(t => t.Due < todayStart);
-        var upcomingCount = tasks.Count(t => t.Due >= todayEnd);
+        var todayCount = dueTasks.Count(t => t.Due!.Value >= todayStart && t.Due!.Value < todayEnd);
+        var overdueCount = dueTasks.Count(t => t.Due!.Value < todayStart);
+        var upcomingCount = dueTasks.Count(t => t.Due!.Value >= todayEnd);
+        var noDueCount = tasks.Count(t => !t.Due.HasValue);
 
         return new RecentTasksDto(
             Today: new TasksSectionDto(todayCount, todayTasks),
             Upcoming: new TasksSectionDto(upcomingCount, upcomingTasks),
-            Overdue: new TasksSectionDto(overdueCount, overdueTasks)
+            Overdue: new TasksSectionDto(overdueCount, overdueTasks),
+            NoDue: new TasksSectionDto(noDueCount, noDueTasks)
         );
     }
+
 
 
 

@@ -8,5 +8,6 @@ public record TasksSectionDto(
 public record RecentTasksDto(
     TasksSectionDto Today,
     TasksSectionDto Upcoming,
-    TasksSectionDto Overdue
+    TasksSectionDto Overdue,
+    TasksSectionDto NoDue
 );
