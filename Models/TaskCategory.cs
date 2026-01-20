@@ -11,7 +11,7 @@ public class TaskCategory
 
     public string Color { get; set; } = null!;
 
-    public string Icon { get; set; } = null!;
+    public string? Icon { get; set; }
     public Guid UserId { get; set; }
     public ICollection<TaskModel> Tasks { get; set; } = [];
 }

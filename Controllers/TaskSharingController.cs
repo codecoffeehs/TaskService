@@ -1,5 +1,6 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
+using MassTransit.Futures.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskService.Dtos;
@@ -22,11 +23,23 @@ namespace TaskService.Controllers
             return userId;
         }
 
+        private string GetEmail()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new UnauthorizedException("Invalid Email");
+            return email;
+        }
+
+
+
         [HttpPost("invite/{taskId}")]
         public async Task<IActionResult> SendInvite(Guid taskId, [FromBody] ShareTaskDto dto)
         {
             var userId = GetUserId();
-            await taskSharingService.SendTaskInviteAsync(userId, taskId, dto);
+            var email = GetEmail();
+            await taskSharingService.SendTaskInviteAsync(userId, taskId, email, dto);
             return Ok("Shared Successfully");
         }
     }

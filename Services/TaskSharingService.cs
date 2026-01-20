@@ -8,7 +8,7 @@ namespace TaskService.Services;
 
 public class TaskSharingService(AppDbContext db)
 {
-    public async Task SendTaskInviteAsync(Guid userId, Guid taskId, ShareTaskDto dto)
+    public async Task SendTaskInviteAsync(Guid userId, Guid taskId, string sharedByEmail, ShareTaskDto dto)
     {
         var task = await db.Tasks
             .FirstOrDefaultAsync(t => t.Id == taskId && t.CreatedByUserId == userId)
@@ -27,7 +27,7 @@ public class TaskSharingService(AppDbContext db)
             Id = Guid.NewGuid(),
             TaskId = task.Id,
             InvitedByUserId = userId,
-            InvitedByUserEmail = dto.SharedByEmail,
+            InvitedByUserEmail = sharedByEmail,
             SharedWithUserId = dto.SharedWithUserId,
             TaskInviteStatus = TaskInviteStatus.Pending,
             SharedOn = DateTimeOffset.UtcNow
