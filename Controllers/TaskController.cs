@@ -139,18 +139,19 @@ public class TaskController(AllTasksService allTasksService) : ControllerBase
         return Ok(result);
     }
 
-    // ✅ PATCH: /Task/edit/{taskId}
-    // Updates a task (partial update supported)
-    [HttpPatch("edit/{taskId}")]
-    public async Task<IActionResult> EditTask(Guid taskId, EditTaskRequest dto)
+    // ✅ PUT: api/tasks/{taskId}
+    [HttpPut("edit/{taskId:guid}")]
+    public async Task<IActionResult> EditTask(Guid taskId, [FromBody] EditTaskRequest request)
     {
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!Guid.TryParse(userIdClaim, out var userId))
             throw new UnauthorizedException("Not Allowed");
 
-        var result = await allTasksService.EditTaskAsync(userId, taskId, dto);
-        return Ok(result);
+        var updatedTask = await allTasksService.EditTaskAsync(userId, taskId, request);
+
+        return Ok(updatedTask);
     }
 
     [HttpGet("{categoryId}")]

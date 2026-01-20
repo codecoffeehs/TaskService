@@ -2,10 +2,11 @@ using TaskService.Models;
 
 namespace TaskService.Dtos;
 
-public record EditTaskRequest
-(
-    string? Title,
-    DateTimeOffset? Due,
-    bool? IsCompleted,
-    RepeatType? RepeatType
-);
+public class EditTaskRequest
+{
+    public string Title { get; set; } = null!;
+    public bool IsCompleted { get; set; }
+    public DateTimeOffset? Due { get; set; }
+    public RepeatType RepeatType { get; set; } = RepeatType.None;
+    public Guid TaskCategoryId { get; set; }
+}

@@ -197,39 +197,35 @@ public class AllTasksService(AppDbContext db)
     public async Task<TaskItem> EditTaskAsync(Guid userId, Guid taskId, EditTaskRequest request)
     {
         var task = await db.Tasks
-            .Where(t => t.CreatedByUserId == userId && t.Id == taskId)
-            .FirstOrDefaultAsync()
+            .FirstOrDefaultAsync(t => t.CreatedByUserId == userId && t.Id == taskId)
             ?? throw new NotFoundException("Task Not Found");
 
-        // Update only what frontend sends
-        if (request.Title != null)
-            task.Title = request.Title;
-
-
-        if (request.Due.HasValue)
-            task.Due = request.Due.Value;
-
-        if (request.IsCompleted.HasValue)
-            task.IsCompleted = request.IsCompleted.Value;
-
-        if (request.RepeatType.HasValue)
-            task.Repeat = request.RepeatType.Value;
-
+        task.Title = request.Title;
+        task.IsCompleted = request.IsCompleted;
+        task.Due = request.Due;
+        task.Repeat = request.RepeatType;
+        task.TaskCategoryId = request.TaskCategoryId;
 
         await db.SaveChangesAsync();
 
-        return new TaskItem(
-                    task.Id,
-                    task.Title,
-                    task.IsCompleted,
-                    task.Due,
-                    task.Repeat,
-                    task.TaskCategoryId,
-                    task.TaskCategory.Title,
-                    task.TaskCategory.Color,
-                    task.TaskCategory.Icon
-        );
+        // ✅ safest: re-query to get category fields
+        return await db.Tasks
+            .AsNoTracking()
+            .Where(t => t.Id == taskId)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .FirstAsync();
     }
+
     public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
