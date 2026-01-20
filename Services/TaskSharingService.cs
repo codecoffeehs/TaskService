@@ -36,7 +36,12 @@ public class TaskSharingService(AppDbContext db)
         db.TaskInvites.Add(newTaskInvite);
         await db.SaveChangesAsync();
     }
+    public async Task<List<TaskShareItem>> GetSharedTaskRequestsAsync(Guid userId)
+    {
+        var sharedtasksRequests = await db.TaskInvites.Where(t => t.SharedWithUserId == userId && t.TaskInviteStatus == TaskInviteStatus.Pending).Select(t => new TaskShareItem(t.Id, t.Task.Title, t.InvitedByUserEmail, t.SharedOn)).ToListAsync();
+        return sharedtasksRequests;
 
+    }
     //     public async Task AcceptInviteAsync(Guid userId, Guid inviteId)
     // {
     //     var invite = await db.TaskInvites

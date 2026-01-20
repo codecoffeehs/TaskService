@@ -18,7 +18,6 @@ namespace TaskService.Controllers
         private Guid GetUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine($"User Id Claim - {userIdClaim}");
             if (!Guid.TryParse(userIdClaim, out var userId))
             {
                 throw new UnauthorizedException("INvalid User Id");
@@ -44,6 +43,14 @@ namespace TaskService.Controllers
             var email = GetEmail();
             await taskSharingService.SendTaskInviteAsync(userId, taskId, email, dto);
             return Ok("Shared Successfully");
+        }
+
+        [HttpGet("requests")]
+        public async Task<IActionResult> GetSharedTaskRequests()
+        {
+            var userId = GetUserId();
+            var result = await taskSharingService.GetSharedTaskRequestsAsync(userId);
+            return Ok(result);
         }
     }
 }
