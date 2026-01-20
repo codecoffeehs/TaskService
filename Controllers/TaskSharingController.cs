@@ -16,6 +16,7 @@ namespace TaskService.Controllers
         private Guid GetUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"User Id Claim - {userIdClaim}");
             if (!Guid.TryParse(userIdClaim, out var userId))
             {
                 throw new UnauthorizedException("INvalid User Id");
