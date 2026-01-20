@@ -85,6 +85,7 @@ public class TaskController(AllTasksService allTasksService) : ControllerBase
 
     // ✅ GET: /Task/nodue
     // Returns only nodue tasks
+    [HttpGet("nodue")]
     public async Task<IActionResult> GetNodueTasks()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
