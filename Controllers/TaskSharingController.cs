@@ -28,7 +28,7 @@ namespace TaskService.Controllers
 
         private string GetEmail()
         {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            var email = User.FindFirst("LinkedId")?.Value;
 
             if (string.IsNullOrWhiteSpace(email))
                 throw new UnauthorizedException("Invalid Email");
