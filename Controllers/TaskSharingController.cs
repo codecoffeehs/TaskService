@@ -52,5 +52,13 @@ namespace TaskService.Controllers
             var result = await taskSharingService.GetSharedTaskRequestsAsync(userId);
             return Ok(result);
         }
+
+        [HttpPost("accept/{inviteId}")]
+        public async Task<IActionResult> AcceptInviteAndCreateTask(Guid inviteId, [FromBody] CreateTaskDto dto)
+        {
+            var userId = GetUserId();
+            var result = await taskSharingService.AcceptInviteAndCreateTask(userId, inviteId, dto);
+            return Ok(result);
+        }
     }
 }

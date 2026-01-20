@@ -42,38 +42,55 @@ public class TaskSharingService(AppDbContext db)
         return sharedtasksRequests;
 
     }
-    //     public async Task AcceptInviteAsync(Guid userId, Guid inviteId)
-    // {
-    //     var invite = await db.TaskInvites
-    //         .Include(i => i.Task)
-    //         .FirstOrDefaultAsync(i => i.Id == inviteId && i.SharedWithUserId == loggedInUserId)
-    //         ?? throw new NotFoundException("Invite not found");
+    public async Task<TaskItem> AcceptInviteAndCreateTask(
+    Guid userId,
+    Guid inviteId,
+    CreateTaskDto dto)
+    {
+        await using var tx = await db.Database.BeginTransactionAsync();
 
-    //     if (invite.TaskInviteStatus != TaskInviteStatus.Pending)
-    //         throw new BadRequestException("Invite already processed");
+        var invite = await db.TaskInvites
+            .FirstOrDefaultAsync(i => i.Id == inviteId && i.SharedWithUserId == userId)
+            ?? throw new NotFoundException("Invite not found");
 
-    //     // Clone / copy task into invited user's task list
-    //     var copiedTask = new TaskModel
-    //     {
-    //         Id = Guid.NewGuid(),
-    //         CreatedByUserId = loggedInUserId,
-    //         Title = invite.Task.Title,
-    //         Due = invite.Task.Due,
-    //         Repeat = invite.Task.Repeat,
-    //         IsCompleted = false,
+        if (invite.TaskInviteStatus != TaskInviteStatus.Pending)
+            throw new BadRequestException("Invite already processed");
 
-    //         // If your categories are shared globally, you can reuse same CategoryId:
-    //         TaskCategoryId = invite.Task.TaskCategoryId
-    //     };
+        var newTask = new TaskModel
+        {
+            CreatedByUserId = userId,
+            Title = dto.Title,
+            TaskCategoryId = dto.TaskCategoryId,
+            Due = dto.Due,
+            Repeat = dto.Repeat
+        };
 
-    //     db.Tasks.Add(copiedTask);
+        invite.TaskInviteStatus = TaskInviteStatus.Accepted;
 
-    //     // Mark invite accepted (do not delete)
-    //     invite.TaskInviteStatus = TaskInviteStatus.Accepted;
-    //     invite.CopiedTaskId = copiedTask.Id;
+        db.Tasks.Add(newTask);
+        await db.SaveChangesAsync();
 
-    //     await db.SaveChangesAsync();
-    // }
+        await tx.CommitAsync();
+
+        // Single clean projection after save
+        var task = await db.Tasks
+            .AsNoTracking()
+            .Where(t => t.Id == newTask.Id)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .FirstAsync();
+
+        return task;
+    }
 
 
 }
