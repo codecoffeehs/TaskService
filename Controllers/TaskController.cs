@@ -82,6 +82,20 @@ public class TaskController(AllTasksService allTasksService) : ControllerBase
         return Ok(result);
     }
 
+
+    // ✅ GET: /Task/nodue
+    // Returns only nodue tasks
+    public async Task<IActionResult> GetNodueTasks()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            throw new UnauthorizedException("Not Allowed");
+
+        var result = await allTasksService.GetNodueTasksAsync(userId);
+        return Ok(result);
+    }
+
     // ✅ POST: /Task/create
     // Creates a new task
     [HttpPost("create")]

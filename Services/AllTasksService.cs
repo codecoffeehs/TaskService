@@ -318,6 +318,30 @@ public class AllTasksService(AppDbContext db)
             .ToListAsync();
     }
 
+    public async Task<List<TaskItem>> GetNodueTasksAsync(Guid userId)
+    {
+        return await db.Tasks
+            .AsNoTracking()
+            .Where(t =>
+                t.CreatedByUserId == userId &&
+                !t.IsCompleted &&
+                t.Due == null
+            )
+            .OrderBy(t => t.Repeat)
+            .ThenBy(t => t.Title)
+            .Select(t => new TaskItem(
+                t.Id,
+                t.Title,
+                t.IsCompleted,
+                t.Due,
+                t.Repeat,
+                t.TaskCategoryId,
+                t.TaskCategory.Title,
+                t.TaskCategory.Color,
+                t.TaskCategory.Icon
+            ))
+            .ToListAsync();
+    }
 
 
 
