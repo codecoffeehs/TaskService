@@ -60,5 +60,15 @@ namespace TaskService.Controllers
             var result = await taskSharingService.AcceptInviteAndCreateTask(userId, inviteId, dto);
             return Ok(result);
         }
+
+        [HttpPost("reject/{inviteId}")]
+
+        public async Task<IActionResult> RejectInvite(Guid inviteId)
+        {
+            var userId = GetUserId();
+            await taskSharingService.RejectInvite(userId, inviteId);
+            return Ok();
+        }
+
     }
 }

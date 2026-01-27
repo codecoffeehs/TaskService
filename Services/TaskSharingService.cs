@@ -92,5 +92,22 @@ public class TaskSharingService(AppDbContext db)
         return task;
     }
 
+    public async Task RejectInvite(
+    Guid userId,
+    Guid inviteId)
+    {
+
+        var invite = await db.TaskInvites
+            .FirstOrDefaultAsync(i => i.Id == inviteId && i.SharedWithUserId == userId)
+            ?? throw new NotFoundException("Invite not found");
+
+        if (invite.TaskInviteStatus != TaskInviteStatus.Pending)
+            throw new BadRequestException("Invite already processed");
+
+        invite.TaskInviteStatus = TaskInviteStatus.Rejected;
+
+        await db.SaveChangesAsync();
+
+    }
 
 }
