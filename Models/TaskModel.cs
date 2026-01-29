@@ -22,7 +22,10 @@ public class TaskModel
     public Guid TaskCategoryId { get; set; }
     public TaskCategory TaskCategory { get; set; } = null!;
 
+    public ICollection<TaskCollaborator> TaskCollaborators { get; set; } = [];
 }
+
+
 
 public enum RepeatType
 {
