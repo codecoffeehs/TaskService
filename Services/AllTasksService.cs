@@ -217,7 +217,7 @@ public class AllTasksService(AppDbContext db)
         // Load all active tasks once
         var tasks = await db.Tasks
             .AsNoTracking()
-            .Where(t => t.CreatedByUserId == userId && !t.IsCompleted)
+            .Where(t => t.TaskCollaborators.Any(tc => tc.UserId == userId))
             .OrderBy(t => t.Due == null)          // ✅ Due tasks first, No-due tasks later
             .ThenBy(t => t.Due)                   // ✅ sorts due tasks by date
             .ThenBy(t => t.Title)
