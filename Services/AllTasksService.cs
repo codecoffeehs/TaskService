@@ -209,23 +209,23 @@ public class AllTasksService(AppDbContext db)
     public async Task<RecentTasksDto> GetRecentTasksAsync(Guid userId)
     {
         var now = DateTimeOffset.UtcNow;
+
+        // Today range in UTC
         var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
         var todayEnd = todayStart.AddDays(1);
 
+        // Load all active tasks once
         var tasks = await db.Tasks
             .AsNoTracking()
-            .Where(t =>
-                db.TaskCollaborators.Any(c =>
-                    c.TaskId == t.Id &&
-                    c.UserId == userId))
-            .OrderBy(t => t.Due == null)
-            .ThenBy(t => t.Due)
+            .Where(t => t.CreatedByUserId == userId && !t.IsCompleted)
+            .OrderBy(t => t.Due == null)          // ✅ Due tasks first, No-due tasks later
+            .ThenBy(t => t.Due)                   // ✅ sorts due tasks by date
             .ThenBy(t => t.Title)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
                 t.IsCompleted,
-                t.Due,
+                t.Due,                            // ✅ DateTimeOffset?
                 t.Repeat,
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
@@ -234,28 +234,44 @@ public class AllTasksService(AppDbContext db)
             ))
             .ToListAsync();
 
+        // Split once
         var dueTasks = tasks.Where(t => t.Due.HasValue).ToList();
         var noDueTasks = tasks.Where(t => !t.Due.HasValue).ToList();
 
+        // Sections
+        var todayTasks = dueTasks
+            .Where(t => t.Due!.Value >= todayStart && t.Due!.Value < todayEnd)
+            .Take(5)
+            .ToList();
+
+        var overdueTasks = dueTasks
+            .Where(t => t.Due!.Value < todayStart)  // ✅ no-due cannot reach here
+            .Take(5)
+            .ToList();
+
+        var upcomingTasks = dueTasks
+            .Where(t => t.Due!.Value >= todayEnd)
+            .Take(5)
+            .ToList();
+
+        var noDueTop = noDueTasks
+            .Take(5)
+            .ToList();
+
+        // Counts
+        var todayCount = dueTasks.Count(t => t.Due!.Value >= todayStart && t.Due!.Value < todayEnd);
+        var overdueCount = dueTasks.Count(t => t.Due!.Value < todayStart);
+        var upcomingCount = dueTasks.Count(t => t.Due!.Value >= todayEnd);
+        var noDueCount = noDueTasks.Count;
+
         return new RecentTasksDto(
-            Today: new TasksSectionDto(
-                dueTasks.Count(t => t.Due >= todayStart && t.Due < todayEnd),
-                dueTasks.Where(t => t.Due >= todayStart && t.Due < todayEnd).Take(5).ToList()
-            ),
-            Upcoming: new TasksSectionDto(
-                dueTasks.Count(t => t.Due >= todayEnd),
-                dueTasks.Where(t => t.Due >= todayEnd).Take(5).ToList()
-            ),
-            Overdue: new TasksSectionDto(
-                dueTasks.Count(t => t.Due < todayStart),
-                dueTasks.Where(t => t.Due < todayStart).Take(5).ToList()
-            ),
-            NoDue: new TasksSectionDto(
-                noDueTasks.Count,
-                noDueTasks.Take(5).ToList()
-            )
+            Today: new TasksSectionDto(todayCount, todayTasks),
+            Upcoming: new TasksSectionDto(upcomingCount, upcomingTasks),
+            Overdue: new TasksSectionDto(overdueCount, overdueTasks),
+            NoDue: new TasksSectionDto(noDueCount, noDueTop)   // ✅ separate section
         );
     }
+
 
     public async Task<List<TaskItem>> GetTodayTasksAsync(Guid userId)
     {
@@ -345,7 +361,6 @@ public class AllTasksService(AppDbContext db)
             .AsNoTracking()
             .Where(t =>
                 t.Due == null &&
-                !t.IsCompleted &&
                 db.TaskCollaborators.Any(c =>
                     c.TaskId == t.Id &&
                     c.UserId == userId))
