@@ -15,6 +15,7 @@ public class AllTasksService(AppDbContext db)
         {
             CreatedByUserId = userId,
             Title = dto.Title,
+            Description = dto.Description ?? string.Empty,
             TaskCategoryId = dto.TaskCategoryId,
             Due = dto.Due,
             Repeat = dto.Repeat
@@ -38,6 +39,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -70,6 +72,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -96,6 +99,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -130,6 +134,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -182,6 +187,7 @@ public class AllTasksService(AppDbContext db)
             ?? throw new NotFoundException("Task Not Found");
 
         task.Title = request.Title;
+        task.Description = request.Description;
         task.IsCompleted = request.IsCompleted;
         task.Due = request.Due;
         task.Repeat = request.RepeatType;
@@ -195,6 +201,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -224,6 +231,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,                            // ✅ DateTimeOffset?
                 t.Repeat,
@@ -292,6 +300,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -319,6 +328,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -345,6 +355,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,
@@ -368,6 +379,7 @@ public class AllTasksService(AppDbContext db)
             .Select(t => new TaskItem(
                 t.Id,
                 t.Title,
+                t.Description,
                 t.IsCompleted,
                 t.Due,
                 t.Repeat,

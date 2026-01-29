@@ -125,6 +125,7 @@ public class TaskSharingService(AppDbContext db)
         return new TaskItem(
             invite.Task.Id,
             invite.Task.Title,
+            invite.Task.Description,
             invite.Task.IsCompleted,
             invite.Task.Due,
             invite.Task.Repeat,

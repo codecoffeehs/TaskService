@@ -10,8 +10,11 @@ public class TaskModel
 
     public Guid CreatedByUserId { get; init; }
 
-    [MaxLength(200)]
+    [MaxLength(50)]
     public string Title { get; set; } = null!;
+
+    [MaxLength(200)]
+    public string Description { get; set; } = string.Empty;
 
     public bool IsCompleted { get; set; } = false;
 
