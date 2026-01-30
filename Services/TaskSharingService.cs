@@ -82,7 +82,7 @@ public class TaskSharingService(AppDbContext db)
     // ❌ Earlier: created a NEW task (wrong)
     // ✅ Now: add user as TaskCollaborator (correct)
     // =========================================================
-    public async Task<TaskItem> AcceptInviteAsync(
+    public async Task AcceptInviteAsync(
         Guid userId,
         Guid inviteId)
     {
@@ -124,19 +124,20 @@ public class TaskSharingService(AppDbContext db)
         await tx.CommitAsync();
 
         // CHANGED:
-        // Return the EXISTING shared task (not a copy)
-        return new TaskItem(
-            invite.Task.Id,
-            invite.Task.Title,
-            invite.Task.Description,
-            invite.Task.IsCompleted,
-            invite.Task.Due,
-            invite.Task.Repeat,
-            invite.Task.TaskCategoryId,
-            invite.Task.TaskCategory.Title,
-            invite.Task.TaskCategory.Color,
-            invite.Task.TaskCategory.Icon
-        );
+        // // Return the EXISTING shared task (not a copy)
+        // return new TaskItem(
+        //     invite.Task.Id,
+        //     invite.Task.Title,
+        //     invite.Task.Description,
+        //     invite.Task.IsCompleted,
+        //     invite.Task.Due,
+        //     invite.Task.Repeat,
+        //     invite.Task.TaskCategoryId,
+        //     invite.Task.TaskCategory.Title,
+        //     invite.Task.TaskCategory.Color,
+        //     invite.Task.TaskCategory.Icon,
+        //     inv
+        // );
     }
 
     // =========================================================

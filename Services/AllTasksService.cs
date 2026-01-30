@@ -46,7 +46,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .FirstAsync();
     }
@@ -79,7 +83,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
     }
@@ -106,7 +114,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
     }
@@ -141,7 +153,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .FirstAsync();
     }
@@ -208,7 +224,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .FirstAsync();
     }
@@ -238,7 +258,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
 
@@ -307,7 +331,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
     }
@@ -335,7 +363,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
     }
@@ -362,7 +394,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
     }
@@ -386,7 +422,11 @@ public class AllTasksService(AppDbContext db)
                 t.TaskCategoryId,
                 t.TaskCategory.Title,
                 t.TaskCategory.Color,
-                t.TaskCategory.Icon
+                t.TaskCategory.Icon,
+                 t.TaskCollaborators.Any(tc =>
+                    tc.UserId == userId &&
+                    tc.TaskRole == TaskRole.Owner
+                )
             ))
             .ToListAsync();
     }
