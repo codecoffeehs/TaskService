@@ -89,6 +89,7 @@ public class TaskSharingService(AppDbContext db)
 
         var invite = await db.TaskInvites
             .Include(i => i.Task)
+                .ThenInclude(t => t.TaskCategory)
             .FirstOrDefaultAsync(i =>
                 i.Id == inviteId &&
                 i.SharedWithUserId == userId)
