@@ -63,6 +63,7 @@ public class TaskSharingService(AppDbContext db)
     public async Task<List<TaskShareItem>> GetSharedTaskRequestsAsync(Guid userId)
     {
         return await db.TaskInvites
+            .Include(i => i.Task)
             .Where(i =>
                 i.SharedWithUserId == userId &&
                 i.TaskInviteStatus == TaskInviteStatus.Pending)
