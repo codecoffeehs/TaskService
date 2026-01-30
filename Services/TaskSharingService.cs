@@ -68,6 +68,7 @@ public class TaskSharingService(AppDbContext db)
                 i.TaskInviteStatus == TaskInviteStatus.Pending)
             .Select(i => new TaskShareItem(
                 i.Id,
+                i.Task.Description,
                 i.Task.Title,
                 i.InvitedByUserEmail,
                 i.SharedOn))

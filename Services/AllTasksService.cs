@@ -180,7 +180,7 @@ public class AllTasksService(AppDbContext db)
             c.UserId == userId);
 
         if (!hasAccess)
-            throw new ForbiddenException("No access to task");
+            throw new ForbiddenException("You Cannot Edit This Task");
 
         var task = await db.Tasks
             .FirstOrDefaultAsync(t => t.Id == taskId)
